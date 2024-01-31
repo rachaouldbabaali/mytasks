@@ -1,113 +1,87 @@
-"use client"
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getTasks, markTaskAsCompleted } from "../api/api";
+import Task from "../components/Task";
+import NewTaskModal from "../components/NewTaskModal";
 import { IoIosCheckboxOutline, IoIosCheckmark, IoMdTime } from "react-icons/io";
 import { FaCalendarAlt } from "react-icons/fa";
 
 interface TaskProps {
-  taskName: string;
+  _id: string;
+  name: string;
   description: string;
   status: "completed" | "not completed";
   creationDate: string;
   completionDate?: string | null;
 }
 
-const Task: React.FC<TaskProps> = ({
-  taskName,
-  description,
-  status,
-  creationDate,
-  completionDate,
-}) => {
-  const isCompleted = status === "completed";
+const AllTasksPage: React.FC = () => {
+  const [tasks, setTasks] = useState<TaskProps[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
-  const handleCompleteTask = () => {
-    console.log(`Task ${taskName} completed`);
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const tasksData = await getTasks();
+        setTasks(tasksData);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
+  const handleCreateTask = async (taskData: { name: string; description: string }) => {
+    try {
+      await createTask(taskData);
+      const updatedTasks = await getTasks();
+      setTasks(updatedTasks);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mb-4 flex-1 whitespace-nowrap">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg font-bold">{taskName}</h2>
-        {isCompleted ? (
-          <span className="text-sm text-green-500">Completed</span>
-        ) : (
-          <button
-            className="text-sm text-red-500 hover:text-red-700 cursor-pointer"
-            onClick={() => handleCompleteTask()}
-          >
-            Mark as completed
-          </button>
-        )}
-      </div>
-      <p className="text-gray-700 my-4">{description}</p>
-      <div className="flex items-center  border-t-2">
-        <div className="flex items-center">
-          <FaCalendarAlt className="text-gray-500 mr-2" />
-          <span>Created: {creationDate}</span>
+    <div className="container mx-auto mt-4 ">
+        <div className="flex justify-around">
+        <h1 className="text-3xl font-bold mb-6 text-gray-100">All Tasks</h1>
+        <button 
+        className="rounded-lg shadow-md bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-4"
+        onClick={() => setIsModalOpen(true)}>
+            Create Task
+        </button>
         </div>
-        {isCompleted && (
-          <div className="flex items-center ml-4">
-            <IoMdTime className="text-gray-500 mr-2" />
-            <span>Completed: {completionDate}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const AllTasksPage: React.FC = () => {
-  // Example tasks data
-  const tasks: TaskProps[] = [
-    {
-      taskName: "Task 1",
-      description: "Description for Task 1",
-      status: "completed",
-      creationDate: "2022-01-01",
-      completionDate: "2022-01-10",
-    },
-    {
-      taskName: "Task 3",
-      description: "Description for Task 3",
-      status: "completed",
-      creationDate: "2022-01-10",
-      completionDate: "2022-01-15",
-    },
-    {
-      taskName: "Task 2",
-      description: "Description for Task 2",
-      status: "not completed",
-      creationDate: "2022-01-05",
-    },
-    {
-      taskName: "Task 6",
-      description: "Description for Task 6",
-      status: "not completed",
-      creationDate: "2022-01-05",
-    },
-    {
-      taskName: "Task 4",
-      description: "Description for Task 4",
-      status: "not completed",
-      creationDate: "2022-01-15",
-    },
-    {
-      taskName: "Task 5",
-      description: "Description for Task 5",
-      status: "completed",
-      creationDate: "2022-01-20",
-      completionDate: "2022-01-25",
-    },
-  ];
-
-  return (
-    <div className="container mx-auto mt-8">
-      <h1 className="text-3xl font-bold mb-4">All Tasks</h1>
+      
       <div className="flex flex-wrap gap-4 shaddow-lg">
-        {tasks.map((task, index) => (
-          <Task key={index} {...task} />
-        ))}
+        {tasks.length === 0 ? (
+    <div className="flex items-center justify-center">
+    <div className="flex flex-col items-center pt-50">
+      <p className="text-xl text-center my-36 text-gray-900">You have no tasks yet!</p>
+      
+    </div>
+  </div>
+  ) : (
+    tasks.map((task) => (
+      <Task
+        key={task._id}
+        name={task.name}
+        description={task.description}
+        status={task.status}
+        creationDate={task.creationDate}
+        completionDate={task.completionDate}
+        onMarkAsCompleted={() => markTaskAsCompleted(task._id)}
+      />
+    ))
+  )}
+        
       </div>
+      {isModalOpen && (
+        <NewTaskModal onClose={() => setIsModalOpen(false)} onCreateTask={handleCreateTask} />
+      )}
     </div>
   );
 };
