@@ -46,6 +46,32 @@ router.get('/tasks/incompleted', authenticateUser, async (req, res) => {
     }
 });
 
+// get all dates of completed tasks and incompleted tasks with the number of tasks of each date
+router.get('/tasks/summary', authenticateUser, async (req, res) => {
+    try {
+        const tasks = await Task.find({ user: req.user._id });
+        const summary = {};
+        tasks.forEach(task => {
+          const date = task.completionDate || task.creationDate; // Use completionDate if available, else use creationDate
+          const formattedDate = new Date(date).toDateString();
+    
+          if (!summary[formattedDate]) {
+            summary[formattedDate] = { completed: 0, incompleted: 0 };
+          }
+    
+          if (task.status) {
+            summary[formattedDate].completed++;
+          } else {
+            summary[formattedDate].incompleted++;
+          }
+        });
+    
+        res.send(summary);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
 // update a task
 router.put('/tasks/:id', authenticateUser, async (req, res) => {
     try {
@@ -97,6 +123,8 @@ router.get('/tasks/:id', authenticateUser, async (req, res) => {
     }
 });
 
+
+
 // mark a task as completed
 router.put('/tasks/mark-completed/:id', authenticateUser, async (req, res) => {
     try {
@@ -110,11 +138,16 @@ router.put('/tasks/mark-completed/:id', authenticateUser, async (req, res) => {
     }
 });
 
-// get the number of completed tasks
+// get the number of completed tasks and incompleted tasks and all tasks
 router.get('/tasks/completed/number', authenticateUser, async (req, res) => {
     try {
-        const tasks = await Task.find({ user: req.user._id, status: true });
-        res.send({ completedTasks: tasks.length });
+        const tasks = await Task.find({ user: req.user._id });
+        const completedTasks = tasks.filter(task => task.status === true);
+        const incompletedTasks = tasks.filter(task => task.status === false);
+        const allTasks = tasks.length;
+        const completed = completedTasks.length;
+        const incompleted = incompletedTasks.length;
+        res.status(200).send({ completed, incompleted, allTasks });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -150,8 +183,90 @@ router.get('/tasks/completed/:start_date/:end_date', authenticateUser, async (re
     }
 });
 
+//get the number of completed tasks  and incompleted tasks and all tasks between two dates
+router.get('/tasks/completed/number/:start_date/:end_date', authenticateUser, async (req, res) => {
+    try {
+        const tasks = await Task.find({ user: req.user._id });
+        const completedTasks = tasks.filter(task => {
+            const taskDate = new Date(task.completionDate);
+            const startDate = new Date(req.params.start_date);
+            const endDate = new Date(req.params.end_date);
+            return taskDate >= startDate && taskDate <= endDate;
+        });
+        const incompletedTasks = tasks.filter(task => {
+            const taskDate = new Date(task.creationDate);
+            const startDate = new Date(req.params.start_date);
+            const endDate = new Date(req.params.end_date);
+            return !task.status && taskDate >= startDate && taskDate <= endDate;
+        });
+        const completed = completedTasks.length;
+        const incompleted = incompletedTasks.length;
+        const allTasks = completed + incompleted;
+        res.send({ completed, incompleted, allTasks });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}); 
 
+// get the number completed and incompleted tasks of a date 
+router.get('/tasks/completed/:date', authenticateUser, async (req, res) => {
+    try {
+        const tasks = await Task.find({ user: req.user._id });
+        const completedTasks = tasks.filter(task => {
+            const taskDate = new Date(task.completionDate);
+            const date = new Date(req.params.date);
+            return taskDate.toDateString() === date.toDateString();
+        });
+        const incompletedTasks = tasks.filter(task => {
+            const taskDate = new Date(task.creationDate);
+            const date = new Date(req.params.date);
+            return !task.status && taskDate.toDateString() === date.toDateString();
+        });
+        const completed = completedTasks.length;
+        const incompleted = incompletedTasks.length;
+        res.send({ completed, incompleted });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
+// get the number of completed tasks and incompleted tasks and all tasks of a year by month 
+router.get('/tasks/completion-rate/monthly', authenticateUser, async (req, res) => {
+    try {
+        const monthlyCompletionRateData = await getMonthlyCompletionRate(req.user._id);
+        res.send(monthlyCompletionRateData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+const getMonthlyCompletionRate = async (userId) => {
+    const tasks = await Task.find({ user: userId });
+    const monthlyCompletionRateData = {};
+    tasks.forEach(task => {
+        const date = task.completionDate || task.creationDate;
+        const month = getMonthName(new Date(date).getMonth() + 1);
+        if (!monthlyCompletionRateData[month]) {
+            monthlyCompletionRateData[month] = { completed: 0, incompleted: 0, allTasks: 0 };
+        }
+        if (task.status) {
+            monthlyCompletionRateData[month].completed++;
+        } else {
+            monthlyCompletionRateData[month].incompleted++;
+        }
+        monthlyCompletionRateData[month].allTasks++;
+    });
+    return monthlyCompletionRateData;
+}
+
+const getMonthName = (month) => {
+    const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    return monthNames[month - 1];
+};
 
 
 
