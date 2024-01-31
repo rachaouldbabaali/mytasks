@@ -29,9 +29,11 @@ const Task: React.FC<TaskProps> = ({
   const [updatedDescription, setUpdatedDescription] = useState(description);
   const router = useRouter();
   const handleCompleteTask = async (id: string) => {
+    console.log(id);
     try {
       const response = await markTaskAsCompleted(id);
       toast.success("Task completed!");
+      
       setIsCompleted(true);
       window.location.reload();
     } catch (error) {
@@ -81,7 +83,7 @@ const Task: React.FC<TaskProps> = ({
   }, [status]);
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-4 flex-1 whitespace-nowrap">
+    <div className=" p-4 rounded-lg shadow-md mb-4 flex-1 whitespace-nowrap bg-[#ffd6a5]" >
       <ToastContainer />
       <div className="flex justify-between items-center mb-2">
         {editMode ? (
@@ -145,7 +147,7 @@ const Task: React.FC<TaskProps> = ({
           </button>
         )}
       </div>
-      <div className="flex items-center justify-around pt-2 border-t-2">
+      <div className="flex flex-col md:flex-row items-center justify-around pt-2 border-t-2">
         <div className="flex items-center ">
           <FaCalendarAlt className="text-gray-500 mr-2" />
           <span>Created: {creationDate?.slice(0, 10)}</span>
