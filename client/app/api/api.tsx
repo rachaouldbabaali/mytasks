@@ -75,20 +75,39 @@ export const getIncompletedTasks = async () => {
     return response.data;
 }
 
-// get number of completed tasks
-export const getNumberOfCompletedTasks = async () => {
+// get number of completed tasks and number of incompleted tasks and total number of tasks
+export const getNumberOfTasks = async () => {
     const response = await axios.get(`${API_URL}/tasks/completed/number`, { withCredentials: true });
     return response.data;
 }
 
-//get percentage of completed tasks
-export const getPercentageOfCompletedTasks = async () => {
-    const response = await axios.get(`${API_URL}/tasks/completed/percentage`, { withCredentials: true });
-    return response.data;
-}
 
 // get completed tasks between two dates
 export const getCompletedTasksBetweenDates = async (startDate: string, endDate: string) => {
-    const response = await axios.get(`${API_URL}/tasks/completed/between/${startDate}/${endDate}`, { withCredentials: true });
+    const response = await axios.get(`${API_URL}/tasks/completed/${startDate}/${endDate}`, { withCredentials: true });
+    return response.data.completedTasks;
+}
+
+//get the number of completed tasks  and incompleted tasks and all tasks between two dates
+export const getNumberOfTasksBetweenDates = async (startDate: string, endDate: string) => {
+    const response = await axios.get(`${API_URL}/tasks/completed/number/${startDate}/${endDate}`, { withCredentials: true });
+    return response.data;
+}
+
+// get the number of completed tasks and incompleted tasks in a date 
+export const getNumberOfTasksInDate = async (date: string) => {
+    const response = await axios.get(`${API_URL}/tasks/completed/${date}`, { withCredentials: true });
+    return response.data;
+}
+
+// get the number of completed tasks and incompleted by date 
+export const getNumberOfTasksByDate = async () => {
+    const response = await axios.get(`${API_URL}/tasks/summary`, { withCredentials: true });
+    return response.data;
+}
+
+// get the number of completed tasks and incompleted tasks by month
+export const getNumberOfTasksByMonth = async () => {
+    const response = await axios.get(`${API_URL}/tasks/completion-rate/monthly`, { withCredentials: true });
     return response.data;
 }
