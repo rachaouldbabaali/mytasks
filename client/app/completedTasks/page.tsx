@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getCompletedTasks, markTaskAsCompleted } from "../api/api"; 
+import withAuth from '../utils/withAuth';
 import Task from "../components/Task";
 import NewTaskModal from "../components/NewTaskModal";
 import { IoIosCheckboxOutline, IoIosCheckmark, IoMdTime } from "react-icons/io";
@@ -85,4 +86,4 @@ const CompletedTasksPage: React.FC = () => {
   );
 };
 
-export default CompletedTasksPage;
+export default withAuth(CompletedTasksPage);

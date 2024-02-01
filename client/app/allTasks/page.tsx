@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import withAuth from '../utils/withAuth';
 import { getTasks, markTaskAsCompleted } from "../api/api";
 import Task from "../components/Task";
 import NewTaskModal from "../components/NewTaskModal";
@@ -34,6 +35,8 @@ const AllTasksPage: React.FC = () => {
     fetchTasks();
   }, []);
 
+
+
   const handleCreateTask = async (taskData: { name: string; description: string }) => {
     try {
       await createTask(taskData);
@@ -47,8 +50,8 @@ const AllTasksPage: React.FC = () => {
 
   return (
     <div className="container mx-auto mt-4 ">
-        <div className="flex justify-around">
-        <h1 className="text-3xl font-bold mb-6 text-gray-100">All Tasks</h1>
+        <div className="flex justify-around border-b-4 border-gray-500  pb-4 mb-4">
+        <h1 className="text-3xl font-bold mb-6 text-gray-700">All Tasks</h1>
         <button 
         className="rounded-lg shadow-md bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-4"
         onClick={() => setIsModalOpen(true)}>
@@ -66,15 +69,15 @@ const AllTasksPage: React.FC = () => {
   </div>
   ) : (
     tasks.map((task) => (
-      <Task
-        key={task._id}
-        name={task.name}
-        description={task.description}
-        status={task.status}
-        creationDate={task.creationDate}
-        completionDate={task.completionDate}
-        onMarkAsCompleted={() => markTaskAsCompleted(task._id)}
-      />
+        <Task
+          key={task._id}
+          taskId={task._id}
+          name={task.name}
+          description={task.description}
+          status={task.status}
+          creationDate={task.creationDate}
+          completionDate={task.completionDate}
+        />
     ))
   )}
         
@@ -86,4 +89,4 @@ const AllTasksPage: React.FC = () => {
   );
 };
 
-export default AllTasksPage;
+export default withAuth(AllTasksPage);

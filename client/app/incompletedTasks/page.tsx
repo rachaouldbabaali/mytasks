@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import withAuth from '../utils/withAuth';
 import { getIncompletedTasks, markTaskAsCompleted } from "../api/api"; // Assuming you have a getIncompletedTasks function
 import Task from "../components/Task";
 import NewTaskModal from "../components/NewTaskModal";
@@ -85,4 +86,4 @@ const IncompletedTasksPage: React.FC = () => {
   );
 };
 
-export default IncompletedTasksPage;
+export default withAuth(IncompletedTasksPage);

@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import withAuth from '../utils/withAuth';
 import DatePicker from "react-datepicker";
 import {
-  isAuthenticated,
   getNumberOfTasks,
   getNumberOfTasksByDate,
 } from "../api/api";
@@ -17,7 +17,6 @@ const AnalyticsPage: React.FC = () => {
   const [numberOfTasks, setNumberOfTasks] = useState(0);
   const [numberOfCompletedTasks, setNumberOfCompletedTasks] = useState(0);
   const [numberOfUncompletedTasks, setNumberOfUncompletedTasks] = useState(0);
-  const [isAuthenticatedUser, setIsAuthenticatedUser] = useState(false);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [barGraphData, setBarGraphData] = useState<
@@ -26,7 +25,9 @@ const AnalyticsPage: React.FC = () => {
 
   const router = useRouter();
 
+
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
         const response = await getNumberOfTasks();
@@ -50,16 +51,6 @@ const AnalyticsPage: React.FC = () => {
       }
     };
 
-    const checkIfAuthenticated = async () => {
-      try {
-        const response = await isAuthenticated();
-        setIsAuthenticatedUser(true);
-      } catch (error) {
-        router.push("/login");
-        console.error("Error checking if authenticated:", error);
-      }
-    };
-
     const fetchBarGraphData = async () => {
       try {
         const response = await getNumberOfTasksByDate();
@@ -72,8 +63,6 @@ const AnalyticsPage: React.FC = () => {
         console.error("Error fetching bar graph data:", error);
       }
     };
-
-    checkIfAuthenticated();
     fetchData();
     fetchAvailableDates();
     fetchBarGraphData();
@@ -139,4 +128,5 @@ const AnalyticsPage: React.FC = () => {
   );
 };
 
-export default AnalyticsPage;
+
+export default withAuth(AnalyticsPage);
