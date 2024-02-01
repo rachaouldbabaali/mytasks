@@ -16,7 +16,9 @@ const withAuth = (WrappedComponent) => {
           }
 
           if (!user) {
-            router.push('/login');
+            if (path !== '/login' && path !== '/register') {
+              router.push('/login');
+            }
           }
         } catch (error) {
           console.error('Error checking user:', error);
