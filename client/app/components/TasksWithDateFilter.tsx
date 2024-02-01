@@ -81,7 +81,7 @@ const TasksWithDateFilter: React.FC = () => {
         <h1 className="text-3xl font-bold mb-6 text-gray-700">
           Tasks with Date Filter
         </h1>
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col md:flex-row items-center space-x-4">
           <label>Start Date:</label>
           <DatePicker
             selected={startDate}
