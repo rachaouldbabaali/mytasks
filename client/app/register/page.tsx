@@ -1,7 +1,6 @@
 "use client"
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import withAuth from '../utils/withAuth';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { register } from '../api/api';
@@ -130,4 +129,4 @@ const SignUpPage: React.FC<SignUpProps> = () => {
   );
 };
 
-export default withAuth(SignUpPage);
+export default SignUpPage;
