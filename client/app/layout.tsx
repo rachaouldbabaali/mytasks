@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
-import { isAuthenticated } from "./api/api";
+import ResponsiveSidebar from "./components/ResponsiveSidebar";
+import { isAuthenticatedUser } from "./api/api";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,20 +19,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  let user = false;
-  if (isAuthenticated()){
-    user = true;
+  const status = isAuthenticatedUser();
+  if(!status) {
+    const router = useRouter();
+    router.push("/login");
   }
 
-  if (!user){
-    router.push('/login');
-  }
 
   return (
     <html lang="en">
-      <body className="flex  bg-gray-300">
-        <Sidebar />
-        <div className=" w-full m-5 p-5 border-4 shadow-lg rounded-lg border-white bg-gray-600">
+      <body className="flex  bg-[#c9e4de]">
+        <div className="hidden md:flex">
+          <Sidebar />
+        </div>
+        <div className="md:hidden">
+          <ResponsiveSidebar />
+        </div>
+        <div className=" w-full lg:m-5 p-5 border-4 shadow-lg rounded-lg border-gray-500 bg-[#faedcb]">
         {children}
         </div>
       </body>
