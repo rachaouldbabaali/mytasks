@@ -3,7 +3,9 @@ import Modal from 'react-modal';
 import { IoMdApps, IoIosLogOut, IoIosCheckboxOutline, IoIosSquareOutline } from 'react-icons/io';
 import { FaChartLine } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import { logout, isAuthenticatedUser } from '../api/api';
+import { logout, isAuthenticated } from '../api/api';
+
+Modal.setAppElement('#__next');
 
 interface ResponsiveSidebarModalProps {
   isOpen: boolean;
@@ -20,51 +22,14 @@ const ResponsiveSidebarModal: React.FC<ResponsiveSidebarModalProps> = ({
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const response = await isAuthenticatedUser();
+        const response = await isAuthenticated();
         setUser(true);
       } catch (error) {
-        console.error('Error checking user:', error);
+        setUser(false);
       }
     };
-
     checkUser();
-  }, []);
-
-  if (!user) {
-    return (
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={onRequestClose}
-        className="sidebar min-h-screen flex flex-col justify-between border-gray-500 bg-[#f7d9c4] text-gray-700 m-5 p-5 rounded-lg border-4"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
-      >
-        <div className="logo p-4">
-          <h3 className="text-3xl font-bold whitespace-nowrap">
-            <a href="/" className="hover:text-blue-500 text-gray-700">
-              MY TASKS
-            </a>
-          </h3>
-        </div>
-
-        <div className="links flex flex-col justify-center">
-          <a
-            href="/login"
-            className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2"
-          >
-            <IoMdApps className="w-6 h-6 text-gray-700" />
-            Login
-          </a>
-          <a
-            href="/register"
-            className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2 whitespace-nowrap"
-          >
-            <IoIosCheckboxOutline className="w-6 h-6 text-gray-700 " />
-            Register
-          </a>
-        </div>
-      </Modal>
-    );
-  }
+  });
 
   const handleLogout = async () => {
     try {
@@ -75,11 +40,27 @@ const ResponsiveSidebarModal: React.FC<ResponsiveSidebarModalProps> = ({
     }
   };
 
+  if (!user) {
+    return (
+      <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Responsive Sidebar Modal">
+        <div className="flex flex-col justify-center items-center">
+          <a href="/login" onClick={onRequestClose} className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2">
+            <IoMdApps className="w-6 h-6 text-gray-700" />
+            Login
+          </a>
+          <a href="/register" onClick={onRequestClose} className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2 whitespace-nowrap">
+            <IoIosCheckboxOutline className="w-6 h-6 text-gray-700 " />
+            Register
+          </a>
+        </div>
+      </Modal>
+    );
+    
+  }
+
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Responsive Sidebar Modal">
-      <div className="flex flex-col justify-center items-center">
-        {user ? (
-          <>
+      <div className="flex flex-col justify-center items-center text-gray-700 m-5 p-5 rounded-lg border-4">
             <a href="/allTasks" onClick={onRequestClose} className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2">
               <IoMdApps className="w-6 h-6" />
               All tasks
@@ -99,19 +80,7 @@ const ResponsiveSidebarModal: React.FC<ResponsiveSidebarModalProps> = ({
             <button onClick={handleLogout} className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2">
               LogOut <IoIosLogOut className="w-6 h-6 text-gray-500" />
             </button>
-          </>
-        ) : (
-          <>
-            <a href="/login" onClick={onRequestClose} className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2">
-              <IoMdApps className="w-6 h-6" />
-              Login
-            </a>
-            <a href="/signup" onClick={onRequestClose} className="p-4 hover:bg-[#c9e4de] rounded-md flex gap-2">
-              <IoMdApps className="w-6 h-6" />
-              Signup
-            </a>
-          </>
-        )}
+        
       </div>
     </Modal>
   );

@@ -11,17 +11,18 @@ const Sidebar: React.FC = () => {
   const [user, setUser] = useState(false);
   const path = usePathname();
   const router = useRouter();
+
   useEffect(() => {
     const checkUser = async () => {
       try {
         const response = await isAuthenticated();
         setUser(true);
       } catch (error) {
-        console.error("Error checking user:", error);
+        setUser(false);
       }
     };
     checkUser();
-  }, []);
+  });
 
   if (!user) {
     return (

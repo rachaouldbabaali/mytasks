@@ -23,6 +23,10 @@ export const register = async (name: string, email: string, password: string) =>
     return response;
     };
 
+    export const isAuthenticated = async () => {
+        const response = await axios.get(`${API_URL}/user`, { withCredentials: true });
+            return response.data;
+    }
 
 export const isAuthenticatedUser = async () => {
     try {

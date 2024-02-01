@@ -32,10 +32,10 @@ export default function RootLayout({
         <div className="hidden md:flex">
           <Sidebar />
         </div>
-        <div className="md:hidden">
+        <div className="md:hidden" id="__next">
           <ResponsiveSidebar />
         </div>
-        <div className=" w-full lg:m-5 p-5 border-4 shadow-lg rounded-lg border-gray-500 bg-[#faedcb]">
+        <div className=" w-full lg:m-5 p-5 border-4 shadow-lg rounded-lg border-gray-500 bg-[#faedcb]" >
         {children}
         </div>
       </body>

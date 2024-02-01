@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { login } from "../api/api";
+import { login, isAuthenticatedUser } from "../api/api";
+import withAuth from '../utils/withAuth';
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
@@ -125,4 +126,4 @@ const LoginPage: React.FC<LoginProps> = () => {
   );
 };
 
-export default LoginPage;
+export default withAuth(LoginPage);
