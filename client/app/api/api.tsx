@@ -23,10 +23,14 @@ export const register = async (name: string, email: string, password: string) =>
     return response;
     };
 
-export const isAuthenticated = async () => {
-    const response = await axios.get(`${API_URL}/user`, { withCredentials: true });
-    return response.data;
-};
+
+export const isAuthenticatedUser = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/user`, { withCredentials: true });
+        return true;
+    } catch (error) {
+        return false;
+    }}
 
 export const logout = async () => {
     const response = await axios.post(`${API_URL}/logout`, null, { withCredentials: true });
@@ -108,6 +112,16 @@ export const getNumberOfTasksByDate = async () => {
 
 // get the number of completed tasks and incompleted tasks by month
 export const getNumberOfTasksByMonth = async () => {
-    const response = await axios.get(`${API_URL}/tasks/completion-rate/monthly`, { withCredentials: true });
+    try{
+        const response = await axios.get(`${API_URL}/tasks/completion-rate/monthly`, { withCredentials: true });
     return response.data;
+    } catch (error) {
+        console.error('Error during getNumberOfTasksByMonth:', error);
+        if (error.response) {
+            return error.response;
+        }
+        else {
+            return error;
+        }
+    }
 }
