@@ -63,7 +63,6 @@ const TasksWithDateFilter: React.FC = () => {
   const handleStartDateChange = (date: Date | null) => {
     if (date) {
       setStartDate(date);
-      console.log(date, "date");
     }
   };
 

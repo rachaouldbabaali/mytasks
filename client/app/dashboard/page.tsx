@@ -87,8 +87,6 @@ const AnalyticsPage: React.FC = () => {
       setSelectedDate(null);
     }
   };
-
-  console.log(selectedDate, "selected date");
   
 
   return (

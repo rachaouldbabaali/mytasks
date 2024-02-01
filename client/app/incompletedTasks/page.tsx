@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import withAuth from '../utils/withAuth';
-import { getIncompletedTasks, markTaskAsCompleted } from "../api/api"; // Assuming you have a getIncompletedTasks function
+import { getIncompletedTasks, markTaskAsCompleted } from "../api/api";
 import Task from "../components/Task";
 import NewTaskModal from "../components/NewTaskModal";
 import { IoIosCheckboxOutline, IoIosCheckmark, IoMdTime } from "react-icons/io";

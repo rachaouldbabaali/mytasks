@@ -29,7 +29,6 @@ const Task: React.FC<TaskProps> = ({
   const [updatedDescription, setUpdatedDescription] = useState(description);
   const router = useRouter();
   const handleCompleteTask = async (id: string) => {
-    console.log(id);
     try {
       const response = await markTaskAsCompleted(id);
       toast.success("Task completed!");
